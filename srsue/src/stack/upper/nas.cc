@@ -432,7 +432,9 @@ bool nas::connection_request_completed(bool outcome)
       srsran::console("RRC connection for Service Request failed.\n");
       logger.info("RRC connection for Service Request failed.");
       rrc->paging_completed(false);
-      state.set_registered(emm_state_t::registered_substate_t::normal_service);
+      // https://www.etsi.org/deliver/etsi_ts/124300_124399/124301/10.02.00_60/ts_124301v100200p.pdf
+      state.set_deregistered(emm_state_t::deregistered_substate_t::plmn_search);
+
     }
   }
   return true;
@@ -1291,6 +1293,11 @@ void nas::parse_service_reject(uint32_t lcid, unique_byte_buffer_t pdu, const ui
 
   enter_emm_deregistered(emm_state_t::deregistered_substate_t::plmn_search);
   reset_security_context();
+
+  if(service_reject.emm_cause == LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK){
+    return;
+  }
+
 
   // Send attach request after receiving service reject
   pdu->clear();
