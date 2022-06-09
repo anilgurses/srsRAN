@@ -499,13 +499,17 @@ void ue_stack_lte::in_sync()
 {
   if (sync_task_queue.size() < SYNC_QUEUE_WARN_THRESHOLD) {
     sync_task_queue.push([this]() { rrc.in_sync(); });
-  } 
+  } else {
+    sync_task_queue.empty();
+  }
 }
 
 void ue_stack_lte::out_of_sync()
 {
   if (sync_task_queue.size() < SYNC_QUEUE_WARN_THRESHOLD) {
     sync_task_queue.push([this]() { rrc.out_of_sync(); });
+  } else {
+    sync_task_queue.empty();
   }
 }
 
@@ -514,6 +518,8 @@ void ue_stack_lte::run_tti(uint32_t tti, uint32_t tti_jump)
   if (running) {
     if (sync_task_queue.size() < SYNC_QUEUE_WARN_THRESHOLD) {
       sync_task_queue.push([this, tti, tti_jump]() { run_tti_impl(tti, tti_jump); });
+    } else {
+      sync_task_queue.empty();
     }
   }
 }
