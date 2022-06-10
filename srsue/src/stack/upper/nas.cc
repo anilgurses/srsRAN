@@ -433,8 +433,8 @@ bool nas::connection_request_completed(bool outcome)
       logger.info("RRC connection for Service Request failed.");
       rrc->paging_completed(false);
       // https://www.etsi.org/deliver/etsi_ts/124300_124399/124301/10.02.00_60/ts_124301v100200p.pdf
+      clear_eps_bearer();
       state.set_deregistered(emm_state_t::deregistered_substate_t::plmn_search);
-
     }
   }
   return true;
