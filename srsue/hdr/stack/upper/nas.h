@@ -141,7 +141,7 @@ private:
   srsran::timer_handler::unique_timer reattach_timer; // started to trigger delayed re-attach
 
   // Values according to TS 24.301 Sec 10.2
-  const uint32_t t3402_duration_ms          = 60 * 1000; // 12m
+  const uint32_t t3402_duration_ms          = 60 * 1000;      // changed from 12m to 1m for shorter reconnection time(it's too long for drone flight) 
   const uint32_t t3410_duration_ms          = 15 * 1000;      // 15s
   const uint32_t t3411_duration_ms          = 10 * 1000;      // 10s
   const uint32_t t3421_duration_ms          = 15 * 1000;      // 15s
