@@ -112,7 +112,7 @@ if(NOT GCC_ARCH)
     set(GCC_ARCH armv8-a CACHE STRING "GCC compile for specific architecture.")
     message(STATUS "Detected aarch64 processor")
   else(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
-    set(GCC_ARCH native CACHE STRING "GCC compile for specific architecture.")
+      # set(GCC_ARCH native CACHE STRING "GCC compile for specific architecture.")
   endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
 endif()
 
@@ -381,8 +381,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     find_package(SSE)
   endif (AUTO_DETECT_ISA)
 
-  ADD_C_COMPILER_FLAG_IF_AVAILABLE("-march=${GCC_ARCH}" HAVE_MARCH_${GCC_ARCH})
-  ADD_CXX_COMPILER_FLAG_IF_AVAILABLE("-march=${GCC_ARCH}" HAVE_MARCH_${GCC_ARCH})
+  # Disabled for different archs
+  # ADD_C_COMPILER_FLAG_IF_AVAILABLE("-march=${GCC_ARCH}" HAVE_MARCH_${GCC_ARCH})
+  # ADD_CXX_COMPILER_FLAG_IF_AVAILABLE("-march=${GCC_ARCH}" HAVE_MARCH_${GCC_ARCH})
 
   if (HAVE_AVX2)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse -mavx2 -DLV_HAVE_AVX2 -DLV_HAVE_AVX -DLV_HAVE_SSE")
