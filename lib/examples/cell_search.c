@@ -48,6 +48,7 @@
 
 int band         = -1;
 int earfcn_start = -1, earfcn_end = -1;
+int freq_off = 0;
 
 cell_search_cfg_t cell_detect_config = {.max_frames_pbch      = SRSRAN_DEFAULT_MAX_FRAMES_PBCH,
                                         .max_frames_pss       = SRSRAN_DEFAULT_MAX_FRAMES_PSS,
@@ -69,12 +70,13 @@ char* rf_dev  = "";
 
 void usage(char* prog)
 {
-  printf("Usage: %s [agsendtvb] -b band\n", prog);
+  printf("Usage: %s [agsendtvbo] -b band\n", prog);
   printf("\t-a RF args [Default %s]\n", rf_args);
   printf("\t-d RF devicename [Default %s]\n", rf_dev);
   printf("\t-g RF gain [Default %.2f dB]\n", rf_gain);
   printf("\t-s earfcn_start [Default All]\n");
   printf("\t-e earfcn_end [Default All]\n");
+  printf("\t-o negative frequency offset in Hz [Default 0]\n");
   printf("\t-n nof_frames_total [Default 100]\n");
   printf("\t-v [set srsran_verbose to debug, default none]\n");
 }
@@ -82,7 +84,7 @@ void usage(char* prog)
 void parse_args(int argc, char** argv)
 {
   int opt;
-  while ((opt = getopt(argc, argv, "agsendvb")) != -1) {
+  while ((opt = getopt(argc, argv, "agsendvbo")) != -1) {
     switch (opt) {
       case 'a':
         rf_args = argv[optind];
@@ -104,6 +106,9 @@ void parse_args(int argc, char** argv)
         break;
       case 'g':
         rf_gain = strtof(argv[optind], NULL);
+        break;
+      case 'o':
+        freq_off = (int)strtol(argv[optind], NULL, 10);
         break;
       case 'v':
         increase_srsran_verbose_level();
@@ -206,11 +211,11 @@ int main(int argc, char** argv)
 
   for (freq = 0; freq < nof_freqs && !go_exit; freq++) {
     /* set rf_freq */
-    srsran_rf_set_rx_freq(&rf, 0, (double)channels[freq].fd * MHZ);
-    INFO("Set rf_freq to %.3f MHz", (double)channels[freq].fd * MHZ / 1000000);
+    srsran_rf_set_rx_freq(&rf, 0, (double)channels[freq].fd * MHZ - freq_off);
+    INFO("Set rf_freq to %.3f MHz", ((double)channels[freq].fd * MHZ - freq_off) / 1000000);
 
     printf(
-        "[%3d/%d]: EARFCN %d Freq. %.2f MHz looking for PSS.\n", freq, nof_freqs, channels[freq].id, channels[freq].fd);
+        "[%3d/%d]: EARFCN %d Freq. %.2f MHz looking for PSS.\n", freq, nof_freqs, channels[freq].id, (channels[freq].fd - (double)freq_off / MHZ));
     fflush(stdout);
 
     if (SRSRAN_VERBOSE_ISINFO()) {
